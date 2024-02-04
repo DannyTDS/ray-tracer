@@ -1,2 +1,4 @@
 bin/
-.vscode
+.vscode/
+.DS_Store/
+image/.DS_Store
