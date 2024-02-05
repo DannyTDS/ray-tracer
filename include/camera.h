@@ -14,6 +14,7 @@ class camera {
     double aspect_ratio = 1.0;  // Ratio of image width over height
     int    image_width  = 100;  // Rendered image width in pixel count
     int    samples_per_pixel = 10;  // Count of random samples for each pixel
+    int    max_depth = 10;      // Maximum number of rays bouncing / reflecting
 
     /**
      * @brief Render the image and output a ppm-coded image format to std::cout
@@ -31,7 +32,7 @@ class camera {
                 color pixel_color(0,0,0);
                 for (int sample=0; sample<samples_per_pixel; ++sample) {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    pixel_color += ray_color(r, max_depth, world);
                 }
                 write_color(std::cout, pixel_color, samples_per_pixel);
             }
@@ -85,11 +86,18 @@ class camera {
      * @param world Objects to be checked for hitting against the ray
      * @return Color to be displayed for this ray (pixel)
      */
-    color ray_color(const ray& r, const hittable& world) const {
+    color ray_color(const ray& r, int depth, const hittable& world) const {
         hit_record rec;
 
-        if (world.hit(r, interval(0, infinity), rec)) {
-            return 0.5 * (rec.normal + color(1,1,1));
+        if (depth <= 0)
+            return color(0,0,0);        // Assume all light is absorbed after max_depth
+
+        // Set tmin=0.001 to ignore possible ray origins below the surface due to round off errors
+        // aka "shadow acne"
+        if (world.hit(r, interval(0.001, infinity), rec)) {
+            // Lambertian reflectance using tangent unit sphere
+            vec3 direction = rec.normal + random_unit_vector();
+            return 0.5 * ray_color(ray(rec.p, direction), depth-1, world);
         }
 
         vec3 unit_direction = unit_vector(r.direction());
