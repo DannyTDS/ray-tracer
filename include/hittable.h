@@ -1,12 +1,16 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
+#include "utils.h"
 #include "ray.h"
+
+class material;         // Defined externally
 
 class hit_record {
   public:
     point3 p;           // Point of hit
     vec3 normal;        // Surface normal
+    shared_ptr<material> mat;   // Material encapsulating scattering info
     double t;           // Linear factor along the casted ray
     bool front_face;    // Which side of the surface did the ray hit
 
