@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-for file in *.ppm; do
+for file in image/*.ppm; do
     if [ -f "$file" ] && [ ! -f "${file%.ppm}.png" ]; then
         # Convert .ppm to .png with the same file name
         magick "$file" "${file%.ppm}.png"
