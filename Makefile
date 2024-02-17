@@ -1,5 +1,5 @@
 CC=		gcc
-CFLAGS=	-std=c++11 -Wall -Wextra -Iinclude -lstdc++
+CFLAGS=	-std=c++17 -Wall -Wextra -Iinclude -lstdc++
 
 HEADERS=	$(wildcard include/*.h)
 

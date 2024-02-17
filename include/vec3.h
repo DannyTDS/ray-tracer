@@ -133,4 +133,23 @@ inline vec3 random_on_hemisphere(const vec3& normal) {
     }
 }
 
+inline vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2*dot(v,n)*n;
+}
+
+/**
+ * @brief Calculate the refracted vector given input vector, surface norm, and ratio between two refractive indices
+ * 
+ * @param uv Normalized incoming vector
+ * @param n Surface norm
+ * @param etai_over_etat 
+ * @return vec3 
+ */
+inline vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat) {
+    auto cos_theta = fmin(dot(-uv, n), 1.0);
+    vec3 out_perp = etai_over_etat * (uv + cos_theta * n);              // Perpendicular part
+    vec3 out_para = -sqrt(fabs(1.0 - out_perp.length_squared())) * n;   // Parallel part
+    return out_perp + out_para;
+}
+
 #endif
