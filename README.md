@@ -3,4 +3,4 @@ This repo contains my personal ray tracer project following the content of the [
 
 # Results
 **Milestone 1**: Basic ray tracing renderer for a 3D scene of spheres. Support shadowing and three materials with different reflection and refraction properties.
-![Milestone 1 Demo](image/final.png)
+![Milestone 1 Demo](image/1/final.png)
