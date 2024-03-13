@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "ray.h"
+#include "aabb.h"
 
 class material;         // Defined externally
 
@@ -28,6 +29,9 @@ class hittable {
 
     // hit interval is helpful in determining the closest object hit along the ray
     virtual bool hit(const ray& r, interval ray_t, hit_record& rec) const = 0;
+
+    // Returns the bounding box of the hittable object
+    virtual aabb bounding_box() const = 0;
 };
 
 #endif

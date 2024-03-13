@@ -1,6 +1,7 @@
 #include "camera.h"
-#include "hittables.h"
+#include "hittable_list.h"
 #include "sphere.h"
+#include "bvh.h"
 
 #include <iostream>
 
@@ -48,6 +49,8 @@ int main() {
     auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
+    world = hittable_list(make_shared<bvh_node>(world));
+
     camera cam;
 
     cam.aspect_ratio      = 16.0 / 9.0;
@@ -63,5 +66,11 @@ int main() {
     cam.defocus_angle = 0.6;
     cam.focus_dist    = 10.0;
 
+    auto start = std::chrono::system_clock::now();
+
     cam.render(world);
+
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = end - start;
+    std::clog << "Render time: " << elapsed.count() << '\n';
 }
