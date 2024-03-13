@@ -14,6 +14,8 @@ class hit_record {
     shared_ptr<material> mat;   // Material encapsulating scattering info
     double t;           // Linear factor along the casted ray
     bool front_face;    // Which side of the surface did the ray hit
+    double u;
+    double v;        // Texture coordinates
 
     void set_face_normal(const ray& r, const vec3& outward_normal) {
         // Sets the hit record normal vector
