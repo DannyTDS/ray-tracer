@@ -28,10 +28,11 @@ class checker_texture : public texture {
     public:
         checker_texture(double _scale, shared_ptr<texture> _even, shared_ptr<texture> _odd)
             : inv_scale(1.0/_scale), even(_even), odd(_odd) {}
-        checker_texture(double _scale, color c1, color c2): inv_scale(1.0/_scale) {
-            even = make_shared<solid_color>(c1);
-            odd = make_shared<solid_color>(c2);
-        }
+        checker_texture(double _scale, color c1, color c2)
+            : inv_scale(1.0/_scale),
+            even(make_shared<solid_color>(c1)),
+            odd(make_shared<solid_color>(c2))
+        {}
 
         color value(double u, double v, const point3& p) const override {
             auto xFloor = static_cast<int>(std::floor(inv_scale * p.x()));

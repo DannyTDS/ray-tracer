@@ -91,7 +91,7 @@ void random_spheres() {
 void two_spheres() {
     hittable_list world;
 
-    auto checker = make_shared<checker_texture>(0.8, color(.2, .3, .1), color(.9, .9, .9));
+    auto checker = make_shared<checker_texture>(0.32, color(.2, .3, .1), color(.9, .9, .9));
 
     world.add(make_shared<sphere>(point3(0,-10, 0), 10, make_shared<lambertian>(checker)));
     world.add(make_shared<sphere>(point3(0, 10, 0), 10, make_shared<lambertian>(checker)));
@@ -115,7 +115,7 @@ void two_spheres() {
 
 
 int main() {
-    switch (1) {
+    switch (2) {
         case 1: random_spheres(); break;
         case 2: two_spheres();    break;
     }
