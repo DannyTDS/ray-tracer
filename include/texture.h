@@ -110,17 +110,19 @@ class tiled_noise_texture : public texture {
  * @brief Perlin noise texture.
  * 
  */
-class noise_texture : public texture {
+class perlin_noise_texture : public texture {
   public:
-    noise_texture() {}
+    perlin_noise_texture(double _scale): scale(_scale) {}
 
     color value(double u, double v, const point3& p) const override {
         (void) u; (void) v;
-        return color(1,1,1) * noise.noise(p);
+        auto s = scale * p;
+        return color(1,1,1) * 0.5 * (1 + sin(s.z() + 10*noise.turb(s)));
     }
 
   private:
     perlin noise;
+    double scale;
 };
 
 #endif
