@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "color.h"
 #include "rtw_stb_image.h"
+#include "perlin.h"
 
 class texture {
   public:
@@ -74,6 +75,52 @@ class image_texture : public texture {
 
   private:
     rtw_image image;
+};
+
+/**
+ * @brief 3x3 blocks of noise texture, repeated in a tiled pattern.
+ * 
+ */
+// FIXME
+class tiled_noise_texture : public texture {
+    public:
+        tiled_noise_texture(double _scale)
+            : inv_scale(1.0/_scale) {
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        c[i*3+j] = lerp(color(1,1,1), color(0,0,0), random_double());
+                    }
+                }
+            }
+    
+        color value(double u, double v, const point3& p) const override {
+            (void) u; (void) v;
+            auto i = static_cast<int>(4*p.x()) & 255;
+            auto j = static_cast<int>(4*p.y()) & 255;
+            auto k = static_cast<int>(4*p.z()) & 255;
+
+            return c[(i ^ j ^ k) % 9];
+        }
+    
+    private:
+        double inv_scale;
+        std::vector<color> c = std::vector<color>(9);
+};
+
+/**
+ * @brief Perlin noise texture.
+ * 
+ */
+class noise_texture : public texture {
+  public:
+    noise_texture() {}
+
+    color value(double u, double v, const point3& p) const override {
+        return color(1,1,1) * noise.noise(p);
+    }
+
+  private:
+    perlin noise;
 };
 
 #endif

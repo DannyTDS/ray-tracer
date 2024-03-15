@@ -56,6 +56,14 @@ inline int random_int(int min, int max) {
     return static_cast<int>(random_double(min, max+1));
 }
 
+/**
+ * @brief Linearly interpolates between two values.
+ * 
+ */
+template <typename T> T lerp(const T& a, const T& b, double t) {
+    return (1.0 - t) * a + t * b;
+}
+
 // Common Headers
 
 #include "ray.h"
