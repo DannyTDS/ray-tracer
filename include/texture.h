@@ -95,11 +95,10 @@ class tiled_noise_texture : public texture {
     
         color value(double u, double v, const point3& p) const override {
             (void) u; (void) v;
-            auto i = static_cast<int>(4*p.x()) & 255;
-            auto j = static_cast<int>(4*p.y()) & 255;
-            auto k = static_cast<int>(4*p.z()) & 255;
+            auto xFloor = static_cast<int>(std::floor(inv_scale * p.x()));
+            auto zFloor = static_cast<int>(std::floor(inv_scale * p.z()));
 
-            return c[(i ^ j ^ k) % 9];
+            return c[(xFloor%3)*3 + (zFloor%3)];
         }
     
     private:
@@ -116,6 +115,7 @@ class noise_texture : public texture {
     noise_texture() {}
 
     color value(double u, double v, const point3& p) const override {
+        (void) u; (void) v;
         return color(1,1,1) * noise.noise(p);
     }
 
