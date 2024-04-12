@@ -10,7 +10,9 @@ class aabb {
     aabb() {} // The default AABB is empty, since intervals are empty by default.
 
     aabb(const interval& ix, const interval& iy, const interval& iz)
-      : x(ix), y(iy), z(iz) { }
+      : x(ix), y(iy), z(iz) {
+        pad_to_minimums();
+      }
 
     aabb(const point3& a, const point3& b) {
         // Treat the two points a and b as extrema for the bounding box, so we don't require a
@@ -18,6 +20,7 @@ class aabb {
         x = interval(fmin(a[0],b[0]), fmax(a[0],b[0]));
         y = interval(fmin(a[1],b[1]), fmax(a[1],b[1]));
         z = interval(fmin(a[2],b[2]), fmax(a[2],b[2]));
+        pad_to_minimums();
     }
 
     aabb(const aabb& box0, const aabb& box1) {  // Union of two AABBs, taking extreme points along each axis
@@ -54,6 +57,15 @@ class aabb {
         }
         return true;
     }
+
+    private:
+        void pad_to_minimums() {
+            // Pad all dimensions to at least some delta value
+            double delta = .0001;
+            if (x.size() < delta) x = x.expand(delta);
+            if (y.size() < delta) y = y.expand(delta);
+            if (z.size() < delta) z = z.expand(delta);
+        }
 };
 
 #endif

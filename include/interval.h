@@ -43,6 +43,7 @@ class interval {
     static const interval empty, universe;
 };
 
+const static interval unit_interval(0, 1);
 const static interval empty   (+infinity, -infinity);
 const static interval universe(-infinity, +infinity);
 
