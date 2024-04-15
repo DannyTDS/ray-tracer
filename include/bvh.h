@@ -5,13 +5,19 @@
 #include "hittable_list.h"
 #include "utils.h"
 
+#include <algorithm>
+
 class bvh_node : public hittable {
     public:
-        bvh_node(const hittable_list& list): bvh_node(list.objects, 0, list.objects.size()) {}
-        bvh_node(const std::vector<shared_ptr<hittable>>& src_objects, size_t start, size_t end) {
-            auto objects = src_objects; // Create a modifiable array of the source scene objects
+        bvh_node(hittable_list& list): bvh_node(list.objects, 0, list.objects.size()) {}
+        bvh_node(std::vector<shared_ptr<hittable>>& objects, size_t start, size_t end) {
+            // Build the bounding box of the span of source objects.
+            bbox = aabb::empty;
+            for (size_t object_index=start; object_index < end; object_index++)
+                bbox = aabb(bbox, objects[object_index]->bounding_box());
 
-            int axis = random_int(0,2);
+            int axis = bbox.longest_axis();
+
             auto comparator = (axis == 0) ? box_x_compare
                             : (axis == 1) ? box_y_compare
                                         : box_z_compare;
@@ -21,13 +27,8 @@ class bvh_node : public hittable {
             if (object_span == 1) {
                 left = right = objects[start];
             } else if (object_span == 2) {
-                if (comparator(objects[start], objects[start+1])) {
-                    left = objects[start];
-                    right = objects[start+1];
-                } else {
-                    left = objects[start+1];
-                    right = objects[start];
-                }
+                left = objects[start];
+                right = objects[start+1];
             } else {
                 std::sort(objects.begin() + start, objects.begin() + end, comparator);
 
@@ -35,8 +36,6 @@ class bvh_node : public hittable {
                 left = make_shared<bvh_node>(objects, start, mid);
                 right = make_shared<bvh_node>(objects, mid, end);
             }
-
-            bbox = aabb(left->bounding_box(), right->bounding_box());
         }
 
         bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
@@ -59,7 +58,9 @@ class bvh_node : public hittable {
         static bool box_compare(
         const shared_ptr<hittable> a, const shared_ptr<hittable> b, int axis_index
         ) {
-            return a->bounding_box().axis(axis_index).min < b->bounding_box().axis(axis_index).min;
+            auto a_axis_interval = a->bounding_box().axis_interval(axis_index);
+            auto b_axis_interval = b->bounding_box().axis_interval(axis_index);
+            return a_axis_interval.min < b_axis_interval.min;
         }
 
         static bool box_x_compare (const shared_ptr<hittable> a, const shared_ptr<hittable> b) {

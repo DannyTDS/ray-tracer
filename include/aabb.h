@@ -38,6 +38,12 @@ class aabb {
         }
     }
 
+    const interval& axis_interval(int n) const {
+        if (n == 1) return y;
+        if (n == 2) return z;
+        return x;
+    }
+
     bool hit(const ray& r, interval ray_t) const {
         for (int a = 0; a < 3; a++) {
             auto invD = 1 / r.direction()[a];
@@ -56,6 +62,15 @@ class aabb {
                 return false;
         }
         return true;
+    }
+
+    int longest_axis() const {
+        // Returns the index of the longest axis of the bounding box.
+
+        if (x.size() > y.size())
+            return x.size() > z.size() ? 0 : 2;
+        else
+            return y.size() > z.size() ? 1 : 2;
     }
 
     static const aabb empty, universe;
