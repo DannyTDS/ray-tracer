@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "hittable.h"
+#include "hittable_list.h"
 
 class quad : public hittable {
     public:
@@ -58,7 +59,7 @@ class quad : public hittable {
         }
 
         virtual bool is_interior(double alpha, double beta, hit_record& rec) const {
-            if (!unit_interval.contains(alpha) || !unit_interval.contains(beta)) {
+            if (!interval::unit.contains(alpha) || !interval::unit.contains(beta)) {
                 return false;
             }
 
@@ -76,5 +77,25 @@ class quad : public hittable {
         vec3 normal;            // Normal to the plane
         double D;               // Distance from the origin to the plane
 };
+
+
+inline shared_ptr<hittable_list> box(const point3&a, const point3&b, shared_ptr<material> mat) {
+    // Compute opposite vertices
+    auto min = point3(fmin(a.x(), b.x()), fmin(a.y(), b.y()), fmin(a.z(), b.z()));
+    auto max = point3(fmax(a.x(), b.x()), fmax(a.y(), b.y()), fmax(a.z(), b.z()));
+    auto dx = vec3(max.x() - min.x(), 0, 0);
+    auto dy = vec3(0, max.y() - min.y(), 0);
+    auto dz = vec3(0, 0, max.z() - min.z());
+
+    // Construct 6 sides
+    auto sides = make_shared<hittable_list>();
+    sides->add(make_shared<quad>(point3(min.x(), min.y(), max.z()),  dx,  dy, mat));    // front
+    sides->add(make_shared<quad>(point3(max.x(), min.y(), min.z()), -dx,  dy, mat));    // back
+    sides->add(make_shared<quad>(point3(min.x(), min.y(), min.z()),  dz,  dy, mat));    // left
+    sides->add(make_shared<quad>(point3(max.x(), min.y(), max.z()), -dz,  dy, mat));    // right
+    sides->add(make_shared<quad>(point3(min.x(), max.y(), max.z()),  dx, -dz, mat));    // top
+    sides->add(make_shared<quad>(point3(min.x(), min.y(), min.z()),  dx,  dz, mat));    // bottom
+    return sides;
+}
 
 #endif
